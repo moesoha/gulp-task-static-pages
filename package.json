@@ -1,0 +1,28 @@
+{
+  "name": "gulp-task-static-pages",
+  "version": "1.0.0",
+  "description": "Gulp tasks for Soha's static pages",
+  "main": "index.js",
+  "author": "Soha Jin <soha@lohu.info>",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "patch-package --patch-dir .patch"
+  },
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-font-spider": "^0.3.6",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-sass": "^5.0.0",
+    "gulp-twig": "^1.2.0",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
+    "sass": "^1.35.1",
+    "through2": "^4.0.2",
+    "vinyl": "^2.2.1",
+    "yaml": "^1.10.2"
+  },
+  "resolutions": {
+    "gulp-twig/twig": "^1.15.3"
+  }
+}
