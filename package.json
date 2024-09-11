@@ -1,24 +1,24 @@
 {
-  "name": "gulp-task-static-pages",
-  "version": "1.0.0",
-  "description": "Gulp tasks for Soha's static pages",
-  "main": "index.js",
-  "author": "Soha Jin <soha@lohu.info>",
-  "license": "MIT",
-  "dependencies": {
-    "gulp": "^4.0.2",
-    "gulp-clean": "^0.4.0",
-    "gulp-font-spider": "^0.3.6",
-    "gulp-htmlmin": "^5.0.1",
-    "gulp-sass": "^5.0.0",
-    "gulp-twig": "^1.2.0",
-    "patch-package": "^6.4.7",
-    "sass": "^1.35.1",
-    "through2": "^4.0.2",
-    "vinyl": "^2.2.1",
-    "yaml": "^1.10.2"
-  },
-  "resolutions": {
-    "gulp-twig/twig": "^1.15.3"
-  }
+	"name": "gulp-task-static-pages",
+	"version": "1.0.0",
+	"description": "Gulp tasks for Soha's static pages",
+	"main": "index.js",
+	"author": "Soha Jin <soha@lohu.info>",
+	"license": "MIT",
+	"dependencies": {
+		"gulp": "^4.0.2",
+		"gulp-clean": "^0.4.0",
+		"gulp-font-spider": "^0.3.6",
+		"gulp-htmlmin": "^5.0.1",
+		"gulp-sass": "^5.1.0",
+		"gulp-twig": "^1.2.0",
+		"patch-package": "^6.4.7",
+		"sass": "^1.78.0",
+		"through2": "^4.0.2",
+		"vinyl": "^3.0.0",
+		"yaml": "^2.5.1"
+	},
+	"resolutions": {
+		"gulp-twig/twig": "^1.17.1"
+	}
 }

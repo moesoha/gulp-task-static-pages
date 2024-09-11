@@ -20,15 +20,11 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 			extension = '.' + extension;
 		}
 
-		let langName = '';
 		if (langs.indexOf(lang) < 0) {
 			throw new Error(`Unknown language code: ${lang}`);
 		}
-		if (lang !== langDefault) {
-			langName = '.' + lang;
-		}
 		const filename = idxDot < 1 ? basename : basename.substring(0, idxDot);
-		return filename + langName + extension;
+		return filename + '.' + lang + extension;
 	};
 
 	const finalTasks = [];
@@ -85,7 +81,7 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 							'i18nSwitch',
 							function (lang) { return getI18nFilename(this.context._target.relative, lang); }
 						);
-						
+
 						Twig.exports.extendFilter(
 							'trans',
 							function (s) { return i18nGetString(path.basename(this.template.path), s); }
