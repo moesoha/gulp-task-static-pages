@@ -10,7 +10,7 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 	const langs = config.i18nLangs;
 	const langDefault = config.i18nDefaultLang;
 
-	const getI18nFilename = (basename, lang, ext) => {
+	const getI18nFilename = (basename, lang, ext, forceLangName = false) => {
 		const idxDot = basename.lastIndexOf('.');
 		let extension = ext;
 		if (!extension) {
@@ -19,25 +19,22 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 		if (!!extension && !extension.startsWith('.')) {
 			extension = '.' + extension;
 		}
+		const filename = idxDot < 1 ? basename : basename.substring(0, idxDot);
 
+		let langName = '';
 		if (langs.indexOf(lang) < 0) {
 			throw new Error(`Unknown language code: ${lang}`);
 		}
-		const filename = idxDot < 1 ? basename : basename.substring(0, idxDot);
-		return filename + '.' + lang + extension;
+		if (forceLangName || (lang !== langDefault)) {
+			langName = '.' + lang;
+		}
+		return filename + langName + extension;
 	};
 
 	const finalTasks = [];
 	for(const lang of langs) {
-		const i18nStrings = {};
-		const i18nGetString = (filename, s) => {
-			const key = s.trim();
-			const domain = getI18nFilename(filename, lang, 'yaml');
-
-			if (!i18nStrings[domain]) i18nStrings[domain] = {};
-			if (!i18nStrings[domain][key]) i18nStrings[domain][key] = '';
-
-			return i18nStrings[domain][key].trim() || key;
+		const i18nStrings = {
+			_: { lang }
 		};
 
 		const taskLangFileLoad = task('i18n:load:' + lang, () => src(path.join(config.i18nPath, `*.${lang}.yaml`))
@@ -65,13 +62,26 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 		const taskTwig = task(
 			'twig:compile:' + lang,//'./templates/**/*.twig', '!./templates/**/_*.twig'
 			() => src([path.posix.join(config.twigPath, '**', '*.twig'), '!' + path.posix.join(config.twigPath, '**', '_*.twig')])
-				.pipe(gulpTwig = require('gulp-twig')({
+				.pipe(require('gulp-twig')({
 					base: path.resolve(config.twigPath),
 					data: {
 						_lang: lang,
-						_prod: config.isProduction
+						_prod: config.isProduction,
+						_translations: i18nStrings
 					},
+					/* extended things will be overridden! don't use scoped variables! */
 					extend (Twig) {
+						const i18nGetString = (ctx, s) => {
+							const strings = ctx.context._translations;
+							const key = s.trim();
+							const domain = getI18nFilename(path.basename(ctx.template.path), ctx.context._lang, 'yaml', true);
+
+							if (!strings[domain]) strings[domain] = {};
+							if (!strings[domain][key]) strings[domain][key] = '';
+
+							return strings[domain][key].trim() || key;
+						};
+
 						Twig.exports.extendFunction(
 							'url',
 							function (url) { return getI18nFilename(url, this.context._lang); } // FIXME: this is url
@@ -84,7 +94,7 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 
 						Twig.exports.extendFilter(
 							'trans',
-							function (s) { return i18nGetString(path.basename(this.template.path), s); }
+							function (s) { return i18nGetString(this, s); }
 						);
 
 						Twig.exports.extendTag({
@@ -100,7 +110,7 @@ module.exports.I18nTaskGenerator = (task, config, extractKey = false) => {
 								const text = this.parse(token.output, context).trim();
 								return {
 									chain,
-									output: i18nGetString(path.basename(this.template.path), text)
+									output: i18nGetString(this, text)
 								}
 							}
 						});
